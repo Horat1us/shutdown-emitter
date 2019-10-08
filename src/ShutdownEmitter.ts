@@ -50,12 +50,16 @@ export class ShutdownEmitter {
     }
 
     private subscribe(): void {
-        signals.forEach((signal) => process.once(signal, () => {
-            console.log(`[shutdown] ${signal}`);
-            this.timeoutHandle = setTimeout(this.handleTimeoutReached, timeout);
-            this.events.emit(eventName, this.handleListenerShutdown, signal);
-            this.handleListenerShutdown();
-        }));
+        signals.forEach((signal): void => {
+            const listener = () => {
+                console.log(`[shutdown] ${signal}`);
+                this.timeoutHandle = setTimeout(this.handleTimeoutReached, timeout);
+                this.events.emit(eventName, this.handleListenerShutdown, signal);
+                this.handleListenerShutdown();
+                process.off(signal, listener);
+            };
+            process.on(signal, listener);
+        });
     }
 
     private exit(): void {
