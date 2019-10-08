@@ -48,11 +48,6 @@ export class ShutdownEmitter {
         this.config.signals.forEach((signal): void => {
             const listener = () => {
                 console.log(`[shutdown] ${signal}`);
-                if (this.isShutdownState) {
-                    console.warn(`[shutdown] force exit`);
-                    process.exit(-2);
-                    return;
-                }
                 this.timeoutHandle = setTimeout(this.handleTimeoutReached, this.config.timeout);
                 this.events.emit(this.config.eventName, this.handleListenerShutdown, signal);
                 this.handleListenerShutdown();
