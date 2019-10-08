@@ -9,7 +9,8 @@
     "build:types": "tsc --project tsconfig.types.json",
     "build:compile": "rollup -c",
     "build:rm": "rm -rf ./dist",
-    "build": "npm run build:rm && npm run build:types && npm run build:compile"
+    "build": "npm run build:rm && npm run build:types && npm run build:compile",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
