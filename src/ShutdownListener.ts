@@ -1,5 +1,5 @@
 export interface ShutdownListener {
-    (done: ShutdownListenerCallback): void;
+    (done: ShutdownListenerCallback, signal: NodeJS.Signals): void;
 }
 
 export interface ShutdownListenerCallback {
@@ -9,9 +9,11 @@ export interface ShutdownListenerCallback {
 export interface ShutdownCallback {
     (error?: Error | null): any;
 }
+
 export interface ShutdownCallbackRequest {
     (callback: ShutdownCallback): any;
 }
+
 export const ShutdownCallbackListener = (
     request: ShutdownCallbackRequest
 ): ShutdownListener => {
@@ -24,15 +26,33 @@ export const ShutdownCallbackListener = (
 
 export interface ShutdownPromise extends Promise<any> {
 }
+
 export interface ShutdownPromiseRequest {
     (): ShutdownPromise;
 }
+
 export const ShutdownPromiseListener = (
     request: ShutdownPromiseRequest,
 ): ShutdownListener => {
     const listener = (done: ShutdownListenerCallback) => request()
-            .catch((error) => done(error, listener))
-            .then(() => done(undefined, listener));
+        .catch((error) => done(error, listener))
+        .then(() => done(undefined, listener));
 
     return listener;
+};
+
+export const ShutdownLogListener = (listener: ShutdownListener, name: string): ShutdownListener => {
+    const format = (message: string): string => `[${name}][shutdown] ${message}`;
+    return (done, signal) => {
+        const logDone: ShutdownListenerCallback = (...args) => {
+            const [ error ] = args;
+            if (error) {
+                console.error(format('failure'), error);
+            } else {
+                console.log(format(`done`));
+            }
+        };
+        console.log(format(`request`), signal);
+        return listener(done, signal);
+    };
 };

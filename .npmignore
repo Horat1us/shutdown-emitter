@@ -2,3 +2,7 @@ src/
 .DS_Store
 .vsode/
 .idea/
+.babelrc
+rollup.config.js
+tsconfig.types.json
+tslint.json
