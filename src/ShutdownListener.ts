@@ -42,7 +42,7 @@ export const ShutdownPromiseListener = (
 };
 
 export const ShutdownLogListener = (listener: ShutdownListener, name: string): ShutdownListener => {
-    const format = (message: string): string => `[${name}][shutdown] ${message}`;
+    const format = (message: string): string => `[shutdown][${name}] ${message}`;
     return (done, signal) => {
         const logDone: ShutdownListenerCallback = (...args) => {
             const [ error ] = args;
