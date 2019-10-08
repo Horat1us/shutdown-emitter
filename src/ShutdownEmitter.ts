@@ -5,7 +5,6 @@ const signals: Array<NodeJS.Signals> = [ 'SIGINT', 'SIGTERM', 'SIGQUIT' ];
 const eventName = 'shutdown';
 const timeout = 10000;
 
-
 export interface ShutdownEmitterConfig {
     signals: Array<NodeJS.Signals>;
     eventName: string;
@@ -50,13 +49,17 @@ export class ShutdownEmitter {
     }
 
     private subscribe(): void {
-        signals.forEach((signal): void => {
+        this.config.signals.forEach((signal): void => {
             const listener = () => {
                 console.log(`[shutdown] ${signal}`);
+                if (this.isShutdownState) {
+                    console.warn(`[shutdown] force exit`);
+                    process.exit(-2);
+                    return;
+                }
                 this.timeoutHandle = setTimeout(this.handleTimeoutReached, timeout);
                 this.events.emit(eventName, this.handleListenerShutdown, signal);
                 this.handleListenerShutdown();
-                process.off(signal, listener);
             };
             process.on(signal, listener);
         });
