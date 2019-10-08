@@ -53,6 +53,6 @@ export const ShutdownLogListener = (listener: ShutdownListener, name: string): S
             }
         };
         console.log(format(`request`), signal);
-        return listener(done, signal);
+        return listener(logDone, signal);
     };
 };
