@@ -1,0 +1,42 @@
+{
+  "name": "shutdown-emitter",
+  "version": "1.0.0",
+  "description": "Node.JS Shutdown Event Emitter",
+  "main": "./dist/shutdown-emitter.cjs.js",
+  "module": "./dist/shutdown-emitter.es.js",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "build:types": "tsc --project tsconfig.types.json",
+    "build:compile": "rollup -c",
+    "build:rm": "rm -rf ./dist",
+    "build": "npm run build:rm && npm run build:types && npm run build:compile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Horat1us/shutdown-emitter.git"
+  },
+  "keywords": [
+    "nodejs",
+    "shutdown",
+    "graceful"
+  ],
+  "author": "Alexander <horat1us>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Horat1us/shutdown-emitter/issues"
+  },
+  "homepage": "https://github.com/Horat1us/shutdown-emitter#readme",
+  "devDependencies": {
+    "@babel/core": "^7.6.2",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.6.2",
+    "@babel/preset-typescript": "^7.6.0",
+    "@types/express": "^4.17.1",
+    "@types/node": "^12.7.11",
+    "@types/redis": "^2.8.14",
+    "rollup": "^1.23.1",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "typescript": "^3.6.3"
+  }
+}
