@@ -1,10 +1,6 @@
 import { EventEmitter } from "events";
 import { ShutdownListener, ShutdownListenerCallback } from "./ShutdownListener";
 
-const signals: Array<NodeJS.Signals> = [ 'SIGINT', 'SIGTERM', 'SIGQUIT' ];
-const eventName = 'shutdown';
-const timeout = 10000;
-
 export interface ShutdownEmitterConfig {
     signals: Array<NodeJS.Signals>;
     eventName: string;
@@ -25,19 +21,19 @@ export class ShutdownEmitter {
     protected exitCode: number = 0;
 
     constructor(config: Partial<ShutdownEmitterConfig> = {}) {
-        this.subscribe();
         this.config = Object.freeze({
             ...ShutdownEmitterDefaultConfig,
             ...config,
         });
+        this.subscribe();
     }
 
     public addListener(listener: ShutdownListener): void {
-        this.events.on(eventName, listener);
+        this.events.on(this.config.eventName, listener);
     }
 
     public removeListener(listener: ShutdownListener): void {
-        this.events.off(eventName, listener);
+        this.events.off(this.config.eventName, listener);
     }
 
     protected get isShutdownState(): boolean {
@@ -45,7 +41,7 @@ export class ShutdownEmitter {
     }
 
     protected get isEventsHandled(): boolean {
-        return this.events.listenerCount(eventName) === 0;
+        return this.events.listenerCount(this.config.eventName) === 0;
     }
 
     private subscribe(): void {
@@ -57,8 +53,8 @@ export class ShutdownEmitter {
                     process.exit(-2);
                     return;
                 }
-                this.timeoutHandle = setTimeout(this.handleTimeoutReached, timeout);
-                this.events.emit(eventName, this.handleListenerShutdown, signal);
+                this.timeoutHandle = setTimeout(this.handleTimeoutReached, this.config.timeout);
+                this.events.emit(this.config.eventName, this.handleListenerShutdown, signal);
                 this.handleListenerShutdown();
             };
             process.on(signal, listener);
@@ -71,13 +67,13 @@ export class ShutdownEmitter {
     }
 
     private handleTimeoutReached = () => {
-        console.error(`[shutdown] timeout ${timeout}`);
+        console.error(`[shutdown] timeout ${this.config.timeout}`);
         process.exit(1);
     };
 
     private handleListenerShutdown = (error?: any, listener?: ShutdownListenerCallback) => {
         if (listener) {
-            this.events.off(eventName, listener);
+            this.events.off(this.config.eventName, listener);
         }
 
         if (error) {
